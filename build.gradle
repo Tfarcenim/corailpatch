@@ -2,24 +2,21 @@ buildscript {
     repositories {
         jcenter()
         maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'https://repo.spongepowered.org/maven' }
-        maven { url = 'https://plugins.gradle.org/m2' }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
+plugins {
+    id "com.wynprice.cursemaven" version "2.1.0"
+}
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = '1.0'
-group = 'com.example.examplemod' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'examplemod'
+version = '1.1'
+group = 'tfar' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'corailpatch'
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
@@ -29,7 +26,6 @@ compileJava {
 minecraft {
     version = '1.12.2-14.23.5.2847'
     runDir = 'run'
-    coreMod = 'com.example.examplemod.ExampleModLoadingPlugin'
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -39,19 +35,15 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-jar.manifest.attributes(
-        'FMLCorePluginContainsFMLMod': true,
-        'FMLCorePlugin': 'com.example.examplemod.ExampleModLoadingPlugin',
-        'ForceLoadAsMod': true,
-        'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker'
-)
-
 repositories {
     mavenCentral()
     maven { url = 'https://repo.spongepowered.org/maven' }
 }
 
 dependencies {
+
+    deobfCompile "curse.maven:corail-tombstone:2958495"
+
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile 'some.group:artifact:version:classifier'
@@ -74,25 +66,6 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     compile 'org.spongepowered:mixin:0.8.1-SNAPSHOT'
-}
-
-mixin {
-    add sourceSets.main, 'mixins.examplemod.refmap.json'
-}
-
-shadowJar {
-    exclude 'dummyThing'
-    exclude 'LICENSE.txt'
-
-    classifier = ''
-}
-build.dependsOn(shadowJar)
-
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-        classpath = sourceSets.main.compileClasspath
-    }
 }
 
 processResources {
